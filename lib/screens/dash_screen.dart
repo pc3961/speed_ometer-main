@@ -14,7 +14,7 @@ class DashScreen extends StatefulWidget {
   final String unit;
 
   @override
-  State<DashScreen>createState() => _DashScreenState();
+  State<DashScreen> createState() => _DashScreenState();
 }
 
 class _DashScreenState extends State<DashScreen> {
@@ -25,6 +25,11 @@ class _DashScreenState extends State<DashScreen> {
 
   /// Create a stream trying to speak speed
   StreamSubscription? _ttsCallback;
+  void setVelocityManually(double velocity) {
+    setState(() {
+      _velocity = velocity;
+    });
+  }
 
   /// String that the tts will read aloud, Speed + Expanded Unit
   String get speakText {
@@ -71,7 +76,7 @@ class _DashScreenState extends State<DashScreen> {
           _isTTSActive = isActive;
           _sharedPreferences?.setBool('isTTSActive', _isTTSActive);
           if (isActive) {
-            _startTTS();
+            setVelocityManually(50.0);
           } else {
             _ttsCallback?.cancel();
           }
@@ -84,7 +89,7 @@ class _DashScreenState extends State<DashScreen> {
         () {
           _isTTSFemale = isFemale;
           _sharedPreferences?.setBool('isTTSFemale', _isTTSFemale);
-          if (_isTTSActive) _startTTS();
+          if (_isTTSActive) setVelocityManually(50.0);
         },
       );
 
@@ -94,7 +99,7 @@ class _DashScreenState extends State<DashScreen> {
         () {
           _ttsDuration = _secondsToDuration(seconds);
           _sharedPreferences?.setInt('ttsDuration', seconds);
-          if (_isTTSActive) _startTTS();
+          if (_isTTSActive) setVelocityManually(50.0);
         },
       );
 
@@ -151,14 +156,14 @@ class _DashScreenState extends State<DashScreen> {
         .listen(
           (Position position) => _onAccelerate(position.speed),
         );
-
+    setVelocityManually(50.0);
     // Set velocities to zero when app opens
-    _velocity = 0;
-    _highestVelocity = 0.0;
+    // _velocity = 0;
+    // _highestVelocity = 0.0;
 
     // Set up tts
     _ttsService = FlutterTts();
-    _ttsService.setSpeechRate(1);
+    _ttsService.setSpeechRate(0.5);
 
     // Load Saved values (or default values when no saved values)
     SharedPreferences.getInstance().then(
